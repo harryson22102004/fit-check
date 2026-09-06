@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Students · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Roster</p>
+      <h1>Enrolled students</h1>
+      <p class="lede">Each student needs at least five stored embeddings before the kiosk can mark them present.</p>
+    </div>
+    <form class="filters" method="get" action="/students">
+      <label>
+        Class / section
+        <select name="class_section" onchange="this.form.submit()">
+          <option value="">All classes</option>
+          {% for s in sections %}
+            <option value="{{ s }}" {% if s == class_section %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <a class="btn primary" href="/enroll">Enroll another</a>
+    </form>
+  </header>
+
+  {% if not students %}
+    <div class="empty">
+      <h2>Roster is empty</h2>
+      <p>Enrollment stores the student record and the face embeddings in one step.</p>
+      <a class="btn primary" href="/enroll">Open camera enrollment</a>
+    </div>
+  {% else %}
+    <div class="cards">
+      {% for s in students %}
+        <article class="card">
+          <div class="card-top">
+            {% if s.photos %}
+              <img src="{{ s.photos[0] }}" alt="{{ s.name }}" />
+            {% else %}
+              <div class="ph">{{ s.name[:1] }}</div>
+            {% endif %}
+            <div>
+              <h3>{{ s.name }}</h3>
+              <p class="mono">{{ s.student_id }} · {{ s.class_section }}</p>
+              <p>{{ s.embedding_count }} embedding{{ 's' if s.embedding_count != 1 else '' }} · enrolled {{ s.enrolled_date }}</p>
+            </div>
+          </div>
+          <div class="mini-thumbs">
+            {% for p in s.photos[:8] %}
+              <img src="{{ p }}" alt="" />
+            {% endfor %}
+          </div>
+          <button class="btn ghost danger" type="button" data-del="{{ s.student_id }}">Remove</button>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+  document.querySelectorAll("[data-del]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-del");
+      if (!confirm("Remove " + id + " and their embeddings?")) return;
+      await fetch("/api/students/" + encodeURIComponent(id), { method: "DELETE" });
+      location.reload();
+    });
+  });
+</script>
+{% endblock %}

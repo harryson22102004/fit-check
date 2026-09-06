@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Enroll faces · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Enrollment pipeline</p>
+      <h1>Capture a student’s face</h1>
+      <p class="lede">The browser camera takes 8 stills at slightly different angles. Each still is turned into a 128-d embedding and stored against the student ID.</p>
+    </div>
+  </header>
+
+  <div class="split">
+    <section class="panel camera-panel">
+      <div class="stage">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <div class="stage-badge" id="cam-status">Starting camera…</div>
+      </div>
+      <div class="cam-actions">
+        <button class="btn primary" id="btn-capture" type="button" disabled>Capture this angle</button>
+        <button class="btn" id="btn-retry" type="button">Retry camera</button>
+      </div>
+      <p class="hint" id="hint">Look at the lens. Turn your head a little between shots — left, right, slight up, slight down.</p>
+    </section>
+    <section class="panel">
+      <form id="enroll-form" class="stack">
+        <label>Student ID
+          <input name="student_id" required maxlength="32" placeholder="KIIT2401" autocomplete="off" />
+        </label>
+        <label>Full name
+          <input name="name" required placeholder="Vivek Das" />
+        </label>
+        <label>Class / section
+          <input name="class_section" required placeholder="CSE-4A" />
+        </label>
+        <label>Guardian WhatsApp <span class="opt">(optional)</span>
+          <input name="guardian" placeholder="+91…" />
+        </label>
+        <div class="thumbs" id="thumbs"></div>
+        <p class="count" id="count">0 / 8 photos</p>
+        <button class="btn primary" id="btn-save" type="submit" disabled>Save enrollment</button>
+        <p class="form-msg" id="form-msg"></p>
+      </form>
+    </section>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/face-api.min.js"></script>
+<script src="/static/js/camera.js"></script>
+<script src="/static/js/enroll.js"></script>
+{% endblock %}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}Smart Attendance{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="rail">
+        <a class="brand" href="/">
+          <span class="mark">SA</span>
+          <span>
+            <strong>Smart Attendance</strong>
+            <em>{{ settings.institution }}</em>
+          </span>
+        </a>
+        <nav>
+          <a href="/" class="{{ 'on' if active == 'dashboard' else '' }}">Today’s roll</a>
+          <a href="/kiosk" class="{{ 'on' if active == 'kiosk' else '' }}">Camera kiosk</a>
+          <a href="/enroll" class="{{ 'on' if active == 'enroll' else '' }}">Enroll faces</a>
+          <a href="/students" class="{{ 'on' if active == 'students' else '' }}">Students</a>
+          <a href="/reports" class="{{ 'on' if active == 'reports' else '' }}">Range report</a>
+          <a href="/settings" class="{{ 'on' if active == 'settings' else '' }}">Window &amp; settings</a>
+        </nav>
+        <div class="rail-foot">
+          <div>{{ enrolled_count }} enrolled</div>
+          <div>{{ present_today }} in today</div>
+          <div class="clock">{{ clock }}</div>
+        </div>
+      </aside>
+      <main class="main">
+        {% block body %}{% endblock %}
+      </main>
+    </div>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

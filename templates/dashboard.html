@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Today’s roll · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Teacher report</p>
+      <h1>Who came, who didn’t</h1>
+      <p class="lede">One row per enrolled student for a chosen date. Time in is the first camera match that day — never rewritten.</p>
+    </div>
+    <form class="filters" method="get" action="/">
+      <label>
+        Date
+        <input type="date" name="day" value="{{ day }}" />
+      </label>
+      <label>
+        Class / section
+        <select name="class_section">
+          <option value="">All classes</option>
+          {% for s in sections %}
+            <option value="{{ s }}" {% if s == class_section %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="btn" type="submit">Show</button>
+    </form>
+  </header>
+
+  <section class="stats">
+    <article><span>On roll</span><strong>{{ stats.total }}</strong></article>
+    <article class="ok"><span>Present</span><strong>{{ stats.present }}</strong></article>
+    <article class="warn"><span>Late</span><strong>{{ stats.late }}</strong></article>
+    <article class="bad"><span>Absent</span><strong>{{ stats.absent }}</strong></article>
+  </section>
+
+  {% if enrolled_count == 0 %}
+    <div class="empty">
+      <h2>No students enrolled yet</h2>
+      <p>Open the camera on Enroll faces, capture 5–10 reference shots per student, then run the kiosk at the classroom door.</p>
+      <a class="btn primary" href="/enroll">Start enrollment</a>
+    </div>
+  {% else %}
+    <div class="toolbar">
+      <a class="btn" href="/export/daily.csv?day={{ day }}{% if class_section %}&class_section={{ class_section }}{% endif %}">Export CSV</a>
+      <a class="btn" href="/export/daily.pdf?day={{ day }}{% if class_section %}&class_section={{ class_section }}{% endif %}">Export PDF</a>
+      <button class="btn ghost" id="close-day" type="button">Mark remaining as Absent</button>
+      <a class="btn primary" href="/kiosk">Open camera kiosk</a>
+    </div>
+    {% if stats.unmatched %}
+      <p class="callout">{{ stats.unmatched }} student{{ 's' if stats.unmatched != 1 else '' }} have no face embeddings yet — they cannot be recognized at the kiosk.</p>
+    {% endif %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Time in</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td class="mono">{{ r.student_id }}</td>
+              <td>{{ r.name }}</td>
+              <td>{{ r.class_section }}</td>
+              <td class="mono">
+                {% if r.time_in %}{{ r.time_in[11:19] }}{% else %}—{% endif %}
+              </td>
+              <td><span class="pill {{ r.status|lower }}">{{ r.status }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+  document.getElementById("close-day")?.addEventListener("click", async () => {
+    if (!confirm("Insert Absent for every enrolled student with no row today?")) return;
+    const res = await fetch("/api/close-day?day={{ day }}", { method: "POST" });
+    const data = await res.json();
+    alert(data.marked_absent + " absent row(s) written.");
+    location.reload();
+  });
+</script>
+{% endblock %}

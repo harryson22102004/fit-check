@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Range report · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Chronic absentees</p>
+      <h1>Attendance over a range</h1>
+      <p class="lede">Percentage is present-or-late days divided by calendar days in the range. Lowest % sorts first.</p>
+    </div>
+    <form class="filters" method="get" action="/reports">
+      <label>From <input type="date" name="start" value="{{ start }}" /></label>
+      <label>To <input type="date" name="end" value="{{ end }}" /></label>
+      <label>
+        Class
+        <select name="class_section">
+          <option value="">All</option>
+          {% for s in sections %}
+            <option value="{{ s }}" {% if s == class_section %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button class="btn" type="submit">Apply</button>
+    </form>
+  </header>
+
+  {% if not rows %}
+    <div class="empty">
+      <h2>Nothing to summarize yet</h2>
+      <p>Enroll a class, run the kiosk, then close the day so absences are explicit rows.</p>
+    </div>
+  {% else %}
+    <div class="toolbar">
+      <a class="btn" href="/export/range.csv?start={{ start }}&end={{ end }}{% if class_section %}&class_section={{ class_section }}{% endif %}">Export CSV</a>
+      <a class="btn" href="/export/range.pdf?start={{ start }}&end={{ end }}{% if class_section %}&class_section={{ class_section }}{% endif %}">Export PDF</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Present</th>
+            <th>Late</th>
+            <th>Absent</th>
+            <th>Attendance %</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td class="mono">{{ r.student_id }}</td>
+              <td>{{ r.name }}</td>
+              <td>{{ r.class_section }}</td>
+              <td>{{ r.present_days or 0 }}</td>
+              <td>{{ r.late_days or 0 }}</td>
+              <td>{{ r.absent_days or 0 }}</td>
+              <td>
+                <div class="meter">
+                  <span style="width: {{ r.attendance_pct }}%"></span>
+                </div>
+                <strong>{{ r.attendance_pct }}%</strong>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}

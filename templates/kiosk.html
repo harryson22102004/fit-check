@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Camera kiosk · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Recognition loop</p>
+      <h1>Classroom door camera</h1>
+      <p class="lede">Frames are sampled every few seconds. Every face in the frame is matched. The first good match of the day writes Present or Late with the real timestamp; repeats are ignored.</p>
+    </div>
+    <div class="kiosk-meta">
+      <div>Window {{ settings.class_start }}–{{ settings.late_after }} · late after that</div>
+      <div>Match ≥ {{ settings.match_threshold }} cosine</div>
+    </div>
+  </header>
+
+  <div class="split kiosk-split">
+    <section class="panel camera-panel">
+      <div class="stage tall">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <div class="stage-badge" id="cam-status">Starting camera…</div>
+      </div>
+      <div class="cam-actions">
+        <button class="btn primary" id="btn-start" type="button">Start scanning</button>
+        <button class="btn" id="btn-stop" type="button" disabled>Pause</button>
+        <button class="btn" id="btn-retry" type="button">Retry camera</button>
+      </div>
+    </section>
+    <section class="panel">
+      <h2 class="panel-title">Live log</h2>
+      <ol class="feed" id="feed">
+        <li class="muted">No matches yet. Stand in frame once scanning starts.</li>
+      </ol>
+    </section>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/face-api.min.js"></script>
+<script src="/static/js/camera.js"></script>
+<script src="/static/js/kiosk.js"></script>
+{% endblock %}

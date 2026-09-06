@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Settings · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Attendance window</p>
+      <h1>When Present becomes Late</h1>
+      <p class="lede">Detection inside the window is Present. After the cutoff it is still logged, with the real camera time, as Late. Closing the day writes Absent for anyone with no row.</p>
+    </div>
+  </header>
+  <form class="panel stack settings-form" method="post" action="/settings">
+    <label>Institution
+      <input name="institution" value="{{ settings.institution }}" />
+    </label>
+    <div class="row-2">
+      <label>Class start
+        <input type="time" name="class_start" value="{{ settings.class_start }}" />
+      </label>
+      <label>Late after
+        <input type="time" name="late_after" value="{{ settings.late_after }}" />
+      </label>
+    </div>
+    <label>Suggested close-of-day time
+      <input type="time" name="close_after" value="{{ settings.close_after }}" />
+    </label>
+    <label>Cosine match threshold
+      <input name="match_threshold" value="{{ settings.match_threshold }}" />
+    </label>
+    <button class="btn primary" type="submit">Save settings</button>
+    {% if request.query_params.get('saved') %}
+      <p class="form-msg ok">Saved.</p>
+    {% endif %}
+  </form>
+{% endblock %}
