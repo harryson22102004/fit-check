@@ -1,7 +1,12 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
+# Vercel serverless functions can write only to /tmp.
+if os.environ.get("VERCEL"):
+    DATA_DIR = Path("/tmp/smart-attendance")
+else:
+    DATA_DIR = BASE_DIR / "data"
 PHOTO_DIR = DATA_DIR / "photos"
 DB_PATH = DATA_DIR / "attendance.db"
 STATIC_DIR = BASE_DIR / "static"
