@@ -66,6 +66,13 @@ const Camera = (() => {
       .withFaceDescriptors();
   }
 
+  async function detectImage(img) {
+    return faceapi
+      .detectSingleFace(img, detectorOptions())
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+  }
+
   function drawDetections(canvas, video, detections, labels) {
     const ctx = canvas.getContext("2d");
     const { w, h } = sizeOverlay(video, canvas);
@@ -116,5 +123,5 @@ const Camera = (() => {
     return (v1 + v2) / (2 * h);
   }
 
-  return { start, stop, detect, drawDetections, snapshotJpeg, landmarkMotion, eyeAspect, loadModels };
+  return { start, stop, detect, detectImage, drawDetections, snapshotJpeg, landmarkMotion, eyeAspect, loadModels };
 })();

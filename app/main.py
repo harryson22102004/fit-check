@@ -71,7 +71,6 @@ def render(request: Request, name: str, **ctx: Any) -> HTMLResponse:
             (today_str(),),
         ).fetchone()["n"]
     payload = {
-        "request": request,
         "settings": settings,
         "sections": sections,
         "today": today_str(),
@@ -80,7 +79,7 @@ def render(request: Request, name: str, **ctx: Any) -> HTMLResponse:
         "present_today": present_today,
         **ctx,
     }
-    return templates.TemplateResponse(name, payload)
+    return templates.TemplateResponse(request, name, payload)
 
 
 @app.get("/", response_class=HTMLResponse)

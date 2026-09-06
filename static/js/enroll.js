@@ -68,6 +68,39 @@ btnRetry.addEventListener("click", () => {
   boot();
 });
 
+document.getElementById("file-photos").addEventListener("change", async (ev) => {
+  const files = Array.from(ev.target.files || []);
+  if (!files.length) return;
+  await Camera.loadModels();
+  for (const file of files) {
+    if (captures.length >= 10) break;
+    const url = URL.createObjectURL(file);
+    const img = await new Promise((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = url;
+    });
+    const det = await Camera.detectImage(img);
+    URL.revokeObjectURL(url);
+    if (!det) {
+      setMsg("No face found in " + file.name, false);
+      continue;
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = img.width;
+    canvas.height = img.height;
+    canvas.getContext("2d").drawImage(img, 0, 0);
+    captures.push({
+      descriptor: Array.from(det.descriptor),
+      photo: canvas.toDataURL("image/jpeg", 0.86),
+    });
+  }
+  renderThumbs();
+  setMsg("Added file photos. Total " + captures.length + ".", true);
+  ev.target.value = "";
+});
+
 btnCapture.addEventListener("click", async () => {
   if (captures.length >= 10) {
     setMsg("Maximum 10 photos.", false);
