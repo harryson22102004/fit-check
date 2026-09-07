@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}History · Smart Attendance{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">Saved records</p>
+      <h1>Student history</h1>
+      <p class="lede">Attendance rows and kiosk matches stay in the database and in this browser. Refreshing the page does not wipe them.</p>
+    </div>
+  </header>
+
+  {% if not attendance and not events %}
+    <div class="empty">
+      <h2>No history yet</h2>
+      <p>Enroll students and run the camera kiosk. Their first match of each day is stored here.</p>
+      <a class="btn primary" href="/kiosk">Open camera kiosk</a>
+    </div>
+  {% else %}
+    <h2 class="panel-title">Attendance log</h2>
+    <div class="table-wrap" style="margin-bottom: 22px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time in</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in attendance %}
+            <tr>
+              <td class="mono">{{ r.date }}</td>
+              <td class="mono">{% if r.time_in %}{{ r.time_in[11:19] }}{% else %}—{% endif %}</td>
+              <td class="mono"><a href="/students/{{ r.student_id }}">{{ r.student_id }}</a></td>
+              <td>{{ r.name }}</td>
+              <td>{{ r.class_section }}</td>
+              <td><span class="pill {{ r.status|lower }}">{{ r.status }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="panel-title">Kiosk matches</h2>
+    {% if not events %}
+      <p class="lede">No kiosk events stored yet.</p>
+    {% else %}
+      <ol class="feed">
+        {% for e in events %}
+          <li>
+            <strong>{{ e.name or e.student_id or "Unknown" }}</strong>
+            · {{ e.message }}
+            <div class="muted">{{ e.created_at }}</div>
+          </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
+  {% endif %}
+{% endblock %}

@@ -24,6 +24,7 @@
           <a href="/kiosk" class="{{ 'on' if active == 'kiosk' else '' }}">Camera kiosk</a>
           <a href="/enroll" class="{{ 'on' if active == 'enroll' else '' }}">Enroll faces</a>
           <a href="/students" class="{{ 'on' if active == 'students' else '' }}">Students</a>
+          <a href="/history" class="{{ 'on' if active == 'history' else '' }}">History</a>
           <a href="/reports" class="{{ 'on' if active == 'reports' else '' }}">Range report</a>
           <a href="/settings" class="{{ 'on' if active == 'settings' else '' }}">Window &amp; settings</a>
         </nav>
@@ -37,6 +38,7 @@
         {% block body %}{% endblock %}
       </main>
     </div>
+    <script src="/static/js/persist.js"></script>
     {% block scripts %}{% endblock %}
   </body>
 </html>

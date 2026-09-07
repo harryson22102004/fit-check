@@ -297,7 +297,7 @@ th { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: 
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 14px;
 }
-.card { padding: 16px; }
+.card { padding: 16px; display: grid; gap: 10px; }
 .card-top { display: flex; gap: 12px; }
 .card-top img, .ph {
   width: 64px;

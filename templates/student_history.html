@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ student.name }} · History{% endblock %}
+{% block body %}
+  <header class="page-head">
+    <div>
+      <p class="eyebrow">{{ student.student_id }} · {{ student.class_section }}</p>
+      <h1>{{ student.name }}</h1>
+      <p class="lede">Every saved attendance row for this student. Enrolled {{ student.enrolled_date }}.</p>
+    </div>
+    <a class="btn" href="/students">Back to roster</a>
+  </header>
+
+  {% if photos %}
+    <div class="mini-thumbs" style="max-width: 420px; margin-bottom: 18px;">
+      {% for p in photos[:8] %}
+        <img src="{{ p }}" alt="" />
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if not history %}
+    <div class="empty">
+      <h2>No attendance rows yet</h2>
+      <p>When this student is matched at the kiosk, Present or Late is stored and kept after refresh.</p>
+      <a class="btn primary" href="/kiosk">Open kiosk</a>
+    </div>
+  {% else %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Time in</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in history %}
+            <tr>
+              <td class="mono">{{ r.date }}</td>
+              <td class="mono">{% if r.time_in %}{{ r.time_in[11:19] }}{% else %}—{% endif %}</td>
+              <td><span class="pill {{ r.status|lower }}">{{ r.status }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -6,6 +6,7 @@ Built from the project blueprint for Vivek Das (B.Tech CSE, KIIT University).
 
 ## What it does
 
+- **History** — student roster, attendance rows, and kiosk matches are stored in SQLite and mirrored in the browser (`localStorage`). Refreshing the page restores them, including on Vercel where the server disk is ephemeral.
 - **Enrollment** — webcam captures 5–10 stills at different angles, stores 128-d face embeddings plus reference photos
 - **Kiosk** — samples the camera every ~2 seconds, matches every face in the frame, optional blink/motion liveness
 - **Logging** — SQLite `UNIQUE(student_id, date)` so a student who walks past five times still has one row

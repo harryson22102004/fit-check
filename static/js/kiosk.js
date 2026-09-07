@@ -34,7 +34,26 @@ function livenessFrom(det) {
   return motionHits >= 2 || blinkHits >= 1 || motion > 0.8;
 }
 
+async function loadHistory() {
+  try {
+    const res = await fetch("/api/events?limit=80");
+    const data = await res.json();
+    const events = data.events || [];
+    if (!events.length) return;
+    feed.innerHTML = "";
+    events.forEach((e) => {
+      const li = document.createElement("li");
+      if (e.kind === "already") li.className = "muted";
+      li.innerHTML = `<strong>${e.name || e.student_id || "Scan"}</strong> · ${e.message}<div class="muted">${e.created_at || ""}</div>`;
+      feed.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 async function boot() {
+  await loadHistory();
   try {
     statusEl.textContent = "Loading face models…";
     await Camera.start(video, statusEl);
@@ -83,6 +102,7 @@ async function tick() {
         `<strong>${row.name}</strong> · ${row.student_id} marked <em>${row.status}</em> at ${String(row.time_in).slice(11, 19)}`
       );
     });
+    if ((data.logged || []).length && window.Persist) Persist.syncFromServer();
     matches
       .filter((m) => m.matched && m.already_logged)
       .forEach((m) => {

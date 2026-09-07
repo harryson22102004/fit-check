@@ -49,6 +49,7 @@
             {% endfor %}
           </div>
           <button class="btn ghost danger" type="button" data-del="{{ s.student_id }}">Remove</button>
+          <a class="btn ghost" href="/students/{{ s.student_id }}">History</a>
         </article>
       {% endfor %}
     </div>
@@ -61,6 +62,7 @@
       const id = btn.getAttribute("data-del");
       if (!confirm("Remove " + id + " and their embeddings?")) return;
       await fetch("/api/students/" + encodeURIComponent(id), { method: "DELETE" });
+      if (window.Persist) Persist.removeStudent(id);
       location.reload();
     });
   });

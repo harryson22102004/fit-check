@@ -42,3 +42,20 @@ def test_enroll_and_recognize_once_per_day(tmp_path, monkeypatch):
         roll = client.get("/")
         assert roll.status_code == 200
         assert "Vivek Das" in roll.text
+
+        snap = client.get("/api/snapshot").json()
+        assert snap["meta"]["student_count"] == 1
+        assert snap["meta"]["attendance_count"] == 1
+        assert snap["events"]
+
+        empty = tmp_path / "empty.db"
+        monkeypatch.setattr("app.db.DB_PATH", empty)
+        init_db()
+        restored = client.post("/api/restore", json=snap)
+        assert restored.status_code == 200
+        hist = client.get("/history")
+        assert hist.status_code == 200
+        assert "Vivek Das" in hist.text
+        person = client.get("/students/KIIT2401")
+        assert person.status_code == 200
+        assert "Present" in person.text or "Late" in person.text

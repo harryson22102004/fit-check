@@ -26,16 +26,21 @@ from app.config import (
     TEMPLATE_DIR,
 )
 from app.db import (
+    add_scan_event,
     class_sections,
+    export_snapshot,
     get_db,
     get_settings,
     get_student,
     init_db,
+    list_scan_events,
     list_students,
     load_all_embeddings,
     now,
+    restore_snapshot,
     save_photo,
     set_setting,
+    student_attendance_history,
     student_photo_paths,
     today_str,
 )
@@ -127,6 +132,56 @@ def students_page(request: Request, class_section: str | None = None):
         active="students",
         students=students,
         class_section=class_section or "",
+    )
+
+
+@app.get("/students/{student_id}", response_class=HTMLResponse)
+def student_history_page(request: Request, student_id: str):
+    sid = student_id.strip().upper()
+    with get_db() as conn:
+        student = get_student(conn, sid)
+        if not student:
+            raise HTTPException(404, "Student not found")
+        history = student_attendance_history(conn, sid)
+        events = [
+            e
+            for e in list_scan_events(conn, limit=200)
+            if (e.get("student_id") or "").upper() == sid
+        ]
+    photos = student_photo_paths(sid)
+    return render(
+        request,
+        "student_history.html",
+        active="students",
+        student=dict(student),
+        history=history,
+        events=events,
+        photos=photos,
+    )
+
+
+@app.get("/history", response_class=HTMLResponse)
+def history_page(request: Request):
+    with get_db() as conn:
+        events = list_scan_events(conn, limit=120)
+        attendance = [
+            dict(r)
+            for r in conn.execute(
+                """
+                SELECT a.date, a.time_in, a.status, s.student_id, s.name, s.class_section
+                FROM attendance a
+                JOIN students s ON s.student_id = a.student_id
+                ORDER BY a.date DESC, a.time_in DESC
+                LIMIT 200
+                """
+            )
+        ]
+    return render(
+        request,
+        "history.html",
+        active="history",
+        events=events,
+        attendance=attendance,
     )
 
 
@@ -300,6 +355,19 @@ def api_recognize(payload: RecognizeIn):
                         "time_in": result["attendance"]["time_in"],
                     }
                 )
+                add_scan_event(
+                    conn,
+                    kind="logged",
+                    student_id=match["student_id"],
+                    name=match["name"],
+                    status=result["attendance"]["status"],
+                    time_in=result["attendance"]["time_in"],
+                    message=(
+                        f"{match['name']} · {match['student_id']} marked "
+                        f"{result['attendance']['status']} at "
+                        f"{str(result['attendance']['time_in'] or '')[11:19]}"
+                    ),
+                )
             else:
                 match["already_logged"] = True
     return {"ok": True, "matches": matches, "logged": logged}
@@ -325,6 +393,45 @@ def api_delete_student(student_id: str):
             f.unlink()
         folder.rmdir()
     return {"ok": True}
+
+
+@app.get("/api/snapshot")
+def api_snapshot():
+    with get_db() as conn:
+        snap = export_snapshot(conn)
+        snap["meta"] = {
+            "student_count": len(snap["students"]),
+            "attendance_count": len(snap["attendance"]),
+            "event_count": len(snap["events"]),
+        }
+        return snap
+
+
+@app.get("/api/events")
+def api_events(limit: int = Query(default=80, ge=1, le=300)):
+    with get_db() as conn:
+        return {"ok": True, "events": list_scan_events(conn, limit=limit)}
+
+
+class RestoreIn(BaseModel):
+    students: list[dict[str, Any]] = []
+    attendance: list[dict[str, Any]] = []
+    events: list[dict[str, Any]] = []
+
+
+@app.post("/api/restore")
+def api_restore(payload: RestoreIn):
+    with get_db() as conn:
+        counts = restore_snapshot(conn, payload.model_dump())
+        snap = export_snapshot(conn)
+    return {
+        "ok": True,
+        "restored": counts,
+        "meta": {
+            "student_count": len(snap["students"]),
+            "attendance_count": len(snap["attendance"]),
+        },
+    }
 
 
 @app.get("/export/daily.csv")

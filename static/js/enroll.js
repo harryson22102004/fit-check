@@ -149,7 +149,8 @@ form.addEventListener("submit", async (e) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || "Save failed");
-    setMsg("Enrolled " + data.student_id + ". You can enroll another student or open the kiosk.", true);
+    if (window.Persist) await Persist.syncFromServer();
+    setMsg("Enrolled " + data.student_id + ". Roster is saved — it will still be here after refresh.", true);
     captures.length = 0;
     renderThumbs();
     form.reset();
