@@ -1,11 +1,12 @@
 ---
 title: Tripura ST Lab
-emoji: 🎙️
+emoji: 🔥
 colorFrom: yellow
 colorTo: red
 sdk: static
 pinned: false
 license: mit
+short_description: Kokborok, Bengali, Marathi → English in the browser
 ---
 
-Static landing page for the Kokborok speech-translation lab.
+In-browser translator for Kokborok (SMOL/gatitos memory), Bengali and Marathi (M2M100), plus Whisper speech.

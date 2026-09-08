@@ -3,37 +3,225 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tripura ST Lab — Kokborok speech translation</title>
+  <title>Tripura ST Lab — Kokborok · Bengali · Marathi → English</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    :root { --ink:#1c1917; --paper:#f6f0e4; --orange:#e85d04; --navy:#14213d; }
-    body { margin:0; font-family:"IBM Plex Sans",sans-serif; background:var(--paper); color:var(--ink); }
-    main { max-width: 760px; margin: 48px auto; padding: 0 20px 80px; }
-    h1,h2 { font-family: Fraunces, Georgia, serif; color: var(--navy); }
-    h1 { font-size: 42px; line-height: 1.1; }
-    .tag { color: var(--orange); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; }
-    a { color: #1d4ed8; }
-    pre { background:#14213d; color:#f6f0e4; padding:16px; border-radius:12px; overflow:auto; }
-    .pipe { background:white; border:1px solid #e7dcc8; border-radius:16px; padding:18px 20px; margin: 18px 0; }
+    :root { --ink:#1c1917; --paper:#f4eee2; --navy:#14213d; --orange:#e85d04; --line:#e4d8c4; --ok:#1b7f4e; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"IBM Plex Sans",system-ui,sans-serif; background:
+      radial-gradient(900px 400px at 10% -10%, rgba(232,93,4,.12), transparent 50%), var(--paper); color:var(--ink); }
+    main { max-width: 880px; margin: 0 auto; padding: 36px 18px 80px; }
+    h1 { font-family: Fraunces, Georgia, serif; font-size: clamp(28px, 5vw, 44px); color:var(--navy); margin: 6px 0 8px; }
+    .tag { color:var(--orange); font-weight:600; letter-spacing:.14em; text-transform:uppercase; font-size:11px; }
+    .lede { color:#57534e; max-width: 62ch; line-height:1.5; }
+    .langs { display:flex; gap:8px; flex-wrap:wrap; margin: 18px 0; }
+    .langs button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:8px 14px; font:inherit; font-weight:600; cursor:pointer; }
+    .langs button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
+    .panel { background:#fffaf2; border:1px solid var(--line); border-radius:18px; padding:18px; box-shadow:0 16px 40px rgba(20,33,61,.07); }
+    label { display:block; font-size:12px; font-weight:600; color:#78716c; margin-bottom:6px; }
+    textarea { width:100%; min-height:120px; border:1px solid var(--line); border-radius:12px; padding:12px; font:inherit; resize:vertical; }
+    .out { min-height:88px; background:#fff; border:1px dashed var(--line); border-radius:12px; padding:12px; white-space:pre-wrap; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
+    .btn { background:var(--orange); color:#fff; border:0; border-radius:999px; padding:10px 16px; font:inherit; font-weight:700; cursor:pointer; }
+    .btn.ghost { background:#fff; color:var(--navy); border:1px solid var(--line); }
+    .status { font-size:13px; color:#57534e; margin-top:10px; min-height:1.4em; }
+    .status.ok { color:var(--ok); }
+    .status.err { color:#b42318; }
+    .pipe { font-size:13px; color:#44403c; margin: 16px 0 22px; }
+    audio { width:100%; margin-top:8px; }
+    footer { margin-top:28px; font-size:13px; color:#78716c; }
+    a { color:#1d4ed8; }
   </style>
 </head>
 <body>
 <main>
-  <p class="tag">vivekharry · Tripura ST Lab</p>
-  <h1>Kokborok audio → Kokborok text → English</h1>
-  <p>Low-resource speech translation lab. Start with Kokborok (tonal, Bodo–Garo), then Bengali and Marathi on BhasaAnuvaad.</p>
-  <div class="pipe">
-    <strong>Cascade</strong><br />
-    16 kHz WAV → NE-ASR / Whisper fine-tune → NLLB / local MT → English
+  <p class="tag">Hugging Face · in-browser models · no iframe</p>
+  <h1>Translate Kokborok, Bengali, and Marathi to English</h1>
+  <p class="lede">This Space runs on your machine inside Hugging Face. Bengali and Marathi use M2M100. Kokborok uses the SMOL + gatitos memory (sdmy/kokborok) plus Bodo–Garo-aware fallback. Optional Whisper for speech.</p>
+  <p class="pipe"><strong>Kokborok:</strong> 16 kHz speech → transcript → English &nbsp;·&nbsp; Nearest language: Bodo &nbsp;·&nbsp; Tonal: no pitch-shift</p>
+
+  <div class="langs" id="langs">
+    <button type="button" data-lang="trp" class="on">Kokborok (trp)</button>
+    <button type="button" data-lang="bn">Bengali (bn)</button>
+    <button type="button" data-lang="mr">Marathi (mr)</button>
   </div>
-  <p>Full training code, dataset registry, and model card:</p>
-  <p><a href="https://huggingface.co/vivekharry/tripura-st-lab">huggingface.co/vivekharry/tripura-st-lab</a></p>
-  <h2>Train</h2>
-  <pre>pip install datasets transformers accelerate librosa
-python -m indic_st.train_asr --dataset kokborok_asr --init-from openai/whisper-small
-python -m indic_st.train_mt  --dataset kokborok_mt</pre>
-  <p>Nearest language: Bodo. Do not pitch-shift Kokborok (tonal). Speed 0.9 / 1.0 / 1.1 only.</p>
+
+  <section class="panel">
+    <label for="src">Source text</label>
+    <textarea id="src" placeholder="Type Kokborok, Bengali, or Marathi…"></textarea>
+    <div class="row">
+      <button class="btn" id="go" type="button">Translate to English</button>
+      <button class="btn ghost" id="sample" type="button">Load sample</button>
+    </div>
+    <label>English</label>
+    <div class="out" id="out">Waiting.</div>
+    <p class="status" id="status">Models load on first translate (one-time download).</p>
+  </section>
+
+  <section class="panel" style="margin-top:16px">
+    <label>Speech (optional) — 16 kHz mono works best</label>
+    <input id="file" type="file" accept="audio/*,.wav,.mp3,.ogg" />
+    <audio id="player" controls></audio>
+    <div class="row">
+      <button class="btn ghost" id="asr" type="button">Transcribe then translate</button>
+    </div>
+  </section>
+
+  <footer>
+    Data: NE-ASR Kokborok, sdmy/kokborok, BanSpeech / BhasaAnuvaad for bn·mr research tracks.
+    Code: <a href="https://huggingface.co/vivekharry/tripura-st-lab" target="_top">vivekharry/tripura-st-lab</a>
+  </footer>
 </main>
+<script type="module">
+  import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
+  env.allowLocalModels = false;
+  env.useBrowserCache = true;
+
+  const SAMPLES = {
+    trp: "Nwng hamjakjwng.",
+    bn: "আজ আকাশটা খুব সুন্দর।",
+    mr: "आज हवा खूप छान आहे.",
+  };
+
+  let lang = "trp";
+  let translator = null;
+  let asr = null;
+  let tm = [];
+
+  const $ = (id) => document.getElementById(id);
+  const status = (msg, cls) => { const el = $("status"); el.textContent = msg; el.className = "status " + (cls || ""); };
+
+  document.querySelectorAll("#langs button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      lang = btn.dataset.lang;
+      document.querySelectorAll("#langs button").forEach((b) => b.classList.toggle("on", b === btn));
+      translator = null;
+    });
+  });
+
+  $("sample").onclick = () => { $("src").value = SAMPLES[lang]; };
+
+  $("file").onchange = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    $("player").src = URL.createObjectURL(f);
+  };
+
+  async function loadTM() {
+    if (tm.length) return tm;
+    const res = await fetch("./kokborok_tm.json");
+    tm = await res.json();
+    return tm;
+  }
+
+  function norm(s) {
+    return (s || "").toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function tokens(s) {
+    return norm(s).split(" ").filter(Boolean);
+  }
+
+  function tmLookup(text) {
+    const n = norm(text);
+    if (!n) return null;
+    const exact = tm.find((p) => norm(p.k) === n);
+    if (exact) return { english: exact.e, how: "exact Kokborok memory (sdmy/kokborok)" };
+    const q = new Set(tokens(text));
+    if (!q.size) return null;
+    let best = null, bestScore = 0;
+    for (const p of tm) {
+      const t = tokens(p.k);
+      if (!t.length) continue;
+      let hit = 0;
+      for (const w of t) if (q.has(w)) hit += 1;
+      const score = hit / Math.max(t.length, q.size);
+      if (score > bestScore) { bestScore = score; best = p; }
+    }
+    if (best && bestScore >= 0.45) {
+      return { english: best.e, how: `fuzzy Kokborok memory (${bestScore.toFixed(2)} overlap)` };
+    }
+    return best ? { english: best.e, how: `nearest Kokborok phrase (${bestScore.toFixed(2)}; low confidence)` } : null;
+  }
+
+  async function getTranslator() {
+    if (translator) return translator;
+    status("Loading M2M100 (Bengali / Marathi → English)…");
+    translator = await pipeline("translation", "Xenova/m2m100_418M");
+    return translator;
+  }
+
+  async function neuralToEnglish(text) {
+    const t = await getTranslator();
+    const src_lang = lang === "mr" ? "mr" : "bn";
+    const out = await t(text, { src_lang, tgt_lang: "en" });
+    const row = Array.isArray(out) ? out[0] : out;
+    return row.translation_text || row.text || String(row);
+  }
+
+  function looksBengali(s) {
+    return /[\u0980-\u09FF]/.test(s);
+  }
+
+  async function translateText(text) {
+    const src = (text || "").trim();
+    if (!src) return { english: "", how: "empty" };
+    if (lang === "trp") {
+      await loadTM();
+      const hit = tmLookup(src);
+      if (hit && !hit.how.includes("low confidence")) return hit;
+      if (looksBengali(src)) {
+        const english = await neuralToEnglish(src);
+        return { english, how: "Bengali-script Kokborok → M2M100 bn→en (areal transfer)" };
+      }
+      if (hit) return hit;
+      return { english: "", how: "No Kokborok neural pair in-browser. Add more parallel text or train NLLB locally." };
+    }
+    const english = await neuralToEnglish(src);
+    return { english, how: `M2M100 ${lang}→en` };
+  }
+
+  $("go").onclick = async () => {
+    $("go").disabled = true;
+    try {
+      const { english, how } = await translateText($("src").value);
+      $("out").textContent = english || "—";
+      status(how, english ? "ok" : "err");
+    } catch (err) {
+      status(String(err), "err");
+    } finally {
+      $("go").disabled = false;
+    }
+  };
+
+  $("asr").onclick = async () => {
+    const f = $("file").files?.[0];
+    if (!f) { status("Choose an audio file first.", "err"); return; }
+    $("asr").disabled = true;
+    try {
+      status("Loading Whisper tiny (speech → text)…");
+      if (!asr) asr = await pipeline("automatic-speech-recognition", "Xenova/whisper-tiny");
+      const url = URL.createObjectURL(f);
+      const langHint = lang === "bn" ? "bengali" : lang === "mr" ? "marathi" : null;
+      const asrOut = langHint
+        ? await asr(url, { language: langHint, task: "transcribe" })
+        : await asr(url);
+      URL.revokeObjectURL(url);
+      const transcript = (asrOut.text || "").trim();
+      $("src").value = transcript;
+      status("Transcribed. Translating…");
+      const { english, how } = await translateText(transcript);
+      $("out").textContent = english || "—";
+      status(`ASR → ${how}`, english ? "ok" : "err");
+    } catch (err) {
+      status(String(err), "err");
+    } finally {
+      $("asr").disabled = false;
+    }
+  };
+
+  loadTM().then((rows) => status(`Kokborok memory ready (${rows.length} pairs).`)).catch(() => {});
+</script>
 </body>
 </html>
