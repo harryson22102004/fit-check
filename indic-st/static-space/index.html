@@ -3,81 +3,217 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tripura ST Lab — Kokborok · Bengali · Marathi → English</title>
+  <title>Bohok — Kokborok, Bangla, Marathi → English</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+Bengali:wght@500;700&family=Noto+Sans+Devanagari:wght@500;700&display=swap" rel="stylesheet" />
   <style>
-    :root { --ink:#1c1917; --paper:#f4eee2; --navy:#14213d; --orange:#e85d04; --line:#e4d8c4; --ok:#1b7f4e; }
+    :root {
+      --soil: #3b1d12;
+      --clay: #c45c26;
+      --leaf: #1f4d3a;
+      --cream: #f3ead7;
+      --card: #fff8ec;
+      --line: #e4d3b8;
+      --mute: #6f6256;
+      --ink: #1a1410;
+    }
     * { box-sizing: border-box; }
-    body { margin:0; font-family:"IBM Plex Sans",system-ui,sans-serif; background:
-      radial-gradient(900px 400px at 10% -10%, rgba(232,93,4,.12), transparent 50%), var(--paper); color:var(--ink); }
-    main { max-width: 880px; margin: 0 auto; padding: 36px 18px 80px; }
-    h1 { font-family: Fraunces, Georgia, serif; font-size: clamp(28px, 5vw, 44px); color:var(--navy); margin: 6px 0 8px; }
-    .tag { color:var(--orange); font-weight:600; letter-spacing:.14em; text-transform:uppercase; font-size:11px; }
-    .lede { color:#57534e; max-width: 62ch; line-height:1.5; }
-    .langs { display:flex; gap:8px; flex-wrap:wrap; margin: 18px 0; }
-    .langs button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:8px 14px; font:inherit; font-weight:600; cursor:pointer; }
-    .langs button.on { background:var(--navy); color:#fff; border-color:var(--navy); }
-    .panel { background:#fffaf2; border:1px solid var(--line); border-radius:18px; padding:18px; box-shadow:0 16px 40px rgba(20,33,61,.07); }
-    label { display:block; font-size:12px; font-weight:600; color:#78716c; margin-bottom:6px; }
-    textarea { width:100%; min-height:120px; border:1px solid var(--line); border-radius:12px; padding:12px; font:inherit; resize:vertical; }
-    .out { min-height:88px; background:#fff; border:1px dashed var(--line); border-radius:12px; padding:12px; white-space:pre-wrap; }
-    .row { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0; }
-    .btn { background:var(--orange); color:#fff; border:0; border-radius:999px; padding:10px 16px; font:inherit; font-weight:700; cursor:pointer; }
-    .btn.ghost { background:#fff; color:var(--navy); border:1px solid var(--line); }
-    .status { font-size:13px; color:#57534e; margin-top:10px; min-height:1.4em; }
-    .status.ok { color:var(--ok); }
-    .status.err { color:#b42318; }
-    .pipe { font-size:13px; color:#44403c; margin: 16px 0 22px; }
-    audio { width:100%; margin-top:8px; }
-    footer { margin-top:28px; font-size:13px; color:#78716c; }
-    a { color:#1d4ed8; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, #efe3cc 0%, var(--cream) 38%, #e8dcc4 100%);
+    }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,248,236,.72);
+      backdrop-filter: blur(10px);
+    }
+    .brand { display: flex; gap: 12px; align-items: center; text-decoration: none; color: inherit; }
+    .mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--clay); color: #fff;
+      display: grid; place-items: center;
+      font-family: Fraunces, serif; font-weight: 700; font-size: 18px;
+    }
+    .brand strong { display: block; font-family: Fraunces, serif; font-size: 18px; }
+    .brand small { color: var(--mute); }
+    .chip {
+      font-size: 12px; color: var(--leaf); background: #e4f0e8;
+      border: 1px solid #cfe0d4; padding: 6px 10px; border-radius: 999px; font-weight: 600;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 20px 72px; }
+    h1 { font-family: Fraunces, Georgia, serif; font-size: clamp(32px, 5vw, 48px); margin: 0 0 8px; letter-spacing: -.03em; }
+    .sub { color: var(--mute); margin: 0 0 22px; max-width: 58ch; line-height: 1.55; }
+
+    .picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .lang {
+      text-align: left; cursor: pointer; border: 1px solid var(--line);
+      background: var(--card); border-radius: 16px; padding: 14px 16px;
+      font: inherit; color: inherit;
+    }
+    .lang:hover { border-color: #c9b48f; }
+    .lang.on { background: var(--soil); color: #f8f1e4; border-color: var(--soil); }
+    .lang .native { display: block; font-size: 20px; font-weight: 700; line-height: 1.2; }
+    .lang[data-lang="bn"] .native { font-family: "Noto Sans Bengali", sans-serif; }
+    .lang[data-lang="mr"] .native { font-family: "Noto Sans Devanagari", sans-serif; }
+    .lang .en { display: block; margin-top: 4px; font-size: 12px; opacity: .75; }
+
+    .desk {
+      display: grid;
+      grid-template-columns: 1fr 52px 1fr;
+      gap: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      overflow: hidden;
+      min-height: 340px;
+      box-shadow: 0 24px 50px rgba(59, 29, 18, .08);
+    }
+    .col { display: flex; flex-direction: column; min-height: 340px; }
+    .col-h {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 600;
+    }
+    .col-h span { color: var(--mute); font-weight: 500; }
+    textarea, .dst {
+      flex: 1; border: 0; outline: 0; resize: none; padding: 18px 20px 8px;
+      font: inherit; font-size: 20px; line-height: 1.45; background: transparent; color: inherit;
+      min-height: 220px;
+    }
+    .lang-bn textarea { font-family: "Noto Sans Bengali", "IBM Plex Sans", sans-serif; }
+    .lang-mr textarea { font-family: "Noto Sans Devanagari", "IBM Plex Sans", sans-serif; }
+    .dst { white-space: pre-wrap; }
+    .dst.empty { color: #b6a894; }
+    .mid {
+      display: grid; place-items: center; border-left: 1px solid var(--line); border-right: 1px solid var(--line);
+      background: #f7eedd; color: var(--soil); font-size: 22px;
+    }
+    .foot {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      padding: 10px 16px 14px; color: var(--mute); font-size: 12px;
+    }
+    .icon {
+      border: 1px solid var(--line); background: #fff; border-radius: 10px;
+      padding: 6px 10px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--soil);
+    }
+    .icon:hover { background: #fff3e4; }
+    .go {
+      margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .btn {
+      background: var(--clay); color: #fff; border: 0; border-radius: 999px;
+      padding: 12px 20px; font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .btn:disabled { opacity: .5; cursor: wait; }
+    .btn.ghost { background: transparent; color: var(--soil); border: 1px solid var(--line); }
+    .pulse { display: none; width: 10px; height: 10px; border-radius: 50%; background: var(--clay); }
+    .pulse.on { display: inline-block; animation: p 1s infinite; }
+    @keyframes p { 50% { opacity: .25; transform: scale(.85); } }
+    .meta { color: var(--mute); font-size: 13px; }
+    .meta.ok { color: var(--leaf); }
+    .meta.err { color: #9f2d20; }
+
+    .speech {
+      margin-top: 18px; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;
+      border: 1px dashed #d4c2a4; border-radius: 16px; padding: 14px 16px; background: rgba(255,248,236,.6);
+    }
+    .speech strong { display: block; font-size: 14px; }
+    .speech p { margin: 4px 0 0; color: var(--mute); font-size: 13px; }
+    .drop { cursor: pointer; }
+    audio { width: 100%; margin-top: 8px; display: none; }
+    audio.show { display: block; }
+
+    @media (max-width: 800px) {
+      .top { padding: 14px 16px; }
+      .picker, .desk, .speech { grid-template-columns: 1fr; }
+      .mid { border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 8px; }
+      .desk { min-height: unset; }
+      .col, textarea, .dst { min-height: 160px; }
+    }
   </style>
 </head>
 <body>
-<main>
-  <p class="tag">Hugging Face · in-browser models · no iframe</p>
-  <h1>Translate Kokborok, Bengali, and Marathi to English</h1>
-  <p class="lede">This Space runs on your machine inside Hugging Face. Bengali and Marathi use M2M100. Kokborok uses the SMOL + gatitos memory (sdmy/kokborok) plus Bodo–Garo-aware fallback. Optional Whisper for speech.</p>
-  <p class="pipe"><strong>Kokborok:</strong> 16 kHz speech → transcript → English &nbsp;·&nbsp; Nearest language: Bodo &nbsp;·&nbsp; Tonal: no pitch-shift</p>
+  <header class="top">
+    <a class="brand" href="./">
+      <span class="mark">B</span>
+      <span><strong>Bohok</strong><small>Tripura speech & text lab</small></span>
+    </a>
+    <span class="chip" id="ready">Loading Kokborok lexicon…</span>
+  </header>
 
-  <div class="langs" id="langs">
-    <button type="button" data-lang="trp" class="on">Kokborok (trp)</button>
-    <button type="button" data-lang="bn">Bengali (bn)</button>
-    <button type="button" data-lang="mr">Marathi (mr)</button>
+  <div class="wrap">
+    <h1>Say it in Kokborok, Bangla, or Marathi.</h1>
+    <p class="sub">English on the right. Kokborok uses a local parallel memory. Bangla and Marathi run M2M100 in this tab — first run downloads the model, then it stays cached.</p>
+
+    <div class="picker" id="picker">
+      <button class="lang on" type="button" data-lang="trp">
+        <span class="native">Kokborok</span>
+        <span class="en">Tripura · trp · tonal · Bodo–Garo</span>
+      </button>
+      <button class="lang" type="button" data-lang="bn">
+        <span class="native">বাংলা</span>
+        <span class="en">Bengali · bn · Indo-Aryan</span>
+      </button>
+      <button class="lang" type="button" data-lang="mr">
+        <span class="native">मराठी</span>
+        <span class="en">Marathi · mr · Indo-Aryan</span>
+      </button>
+    </div>
+
+    <div class="desk" id="desk">
+      <div class="col">
+        <div class="col-h"><b id="srcName">Kokborok</b> <span id="count">0</span></div>
+        <textarea id="src" placeholder="Ang bwkhwrwng…"></textarea>
+        <div class="foot">
+          <button class="icon" id="sample" type="button">Sample sentence</button>
+          <button class="icon" id="clear" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="mid" title="to English">→</div>
+      <div class="col">
+        <div class="col-h"><b>English</b> <button class="icon" id="copy" type="button">Copy</button></div>
+        <div class="dst empty" id="out">Translation appears here.</div>
+        <div class="foot"><span id="engine">Ready when you are. Ctrl + Enter translates.</span></div>
+      </div>
+    </div>
+
+    <div class="go">
+      <button class="btn" id="go" type="button">Translate to English</button>
+      <span class="pulse" id="pulse"></span>
+      <span class="meta" id="status"></span>
+    </div>
+
+    <label class="speech drop" id="drop">
+      <div>
+        <strong>Drop speech here, or choose a file</strong>
+        <p>Whisper tiny transcribes, then the same translator runs. Prefer 16 kHz mono WAV.</p>
+        <audio id="player" controls></audio>
+      </div>
+      <div>
+        <input id="file" type="file" accept="audio/*,.wav,.mp3,.ogg,.webm" hidden />
+        <button class="btn ghost" id="asr" type="button">Transcribe + translate</button>
+      </div>
+    </label>
   </div>
 
-  <section class="panel">
-    <label for="src">Source text</label>
-    <textarea id="src" placeholder="Type Kokborok, Bengali, or Marathi…"></textarea>
-    <div class="row">
-      <button class="btn" id="go" type="button">Translate to English</button>
-      <button class="btn ghost" id="sample" type="button">Load sample</button>
-    </div>
-    <label>English</label>
-    <div class="out" id="out">Waiting.</div>
-    <p class="status" id="status">Models load on first translate (one-time download).</p>
-  </section>
-
-  <section class="panel" style="margin-top:16px">
-    <label>Speech (optional) — 16 kHz mono works best</label>
-    <input id="file" type="file" accept="audio/*,.wav,.mp3,.ogg" />
-    <audio id="player" controls></audio>
-    <div class="row">
-      <button class="btn ghost" id="asr" type="button">Transcribe then translate</button>
-    </div>
-  </section>
-
-  <footer>
-    Data: NE-ASR Kokborok, sdmy/kokborok, BanSpeech / BhasaAnuvaad for bn·mr research tracks.
-    Code: <a href="https://huggingface.co/vivekharry/tripura-st-lab" target="_top">vivekharry/tripura-st-lab</a>
-  </footer>
-</main>
 <script type="module">
   import { pipeline, env } from "https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2";
   env.allowLocalModels = false;
   env.useBrowserCache = true;
 
+  const META = {
+    trp: { name: "Kokborok", ph: "Ang bwkhwrwng…  /  বাংলা লিপিতেও লিখুন" },
+    bn: { name: "বাংলা", ph: "আজকের কথা লিখুন…" },
+    mr: { name: "मराठी", ph: "इथे मराठीत लिहा…" },
+  };
   const SAMPLES = {
     trp: "Nwng hamjakjwng.",
     bn: "আজ আকাশটা খুব সুন্দর।",
@@ -90,44 +226,71 @@
   let tm = [];
 
   const $ = (id) => document.getElementById(id);
-  const status = (msg, cls) => { const el = $("status"); el.textContent = msg; el.className = "status " + (cls || ""); };
+  const src = $("src");
+  const out = $("out");
+  const statusEl = $("status");
+  const engine = $("engine");
 
-  document.querySelectorAll("#langs button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      lang = btn.dataset.lang;
-      document.querySelectorAll("#langs button").forEach((b) => b.classList.toggle("on", b === btn));
-      translator = null;
-    });
+  function setStatus(msg, cls) {
+    statusEl.textContent = msg || "";
+    statusEl.className = "meta " + (cls || "");
+  }
+
+  function setBusy(on) {
+    $("go").disabled = on;
+    $("asr").disabled = on;
+    $("pulse").classList.toggle("on", on);
+  }
+
+  function paintLang() {
+    document.querySelectorAll(".lang").forEach((b) => b.classList.toggle("on", b.dataset.lang === lang));
+    $("srcName").textContent = META[lang].name;
+    src.placeholder = META[lang].ph;
+    $("desk").classList.remove("lang-bn", "lang-mr");
+    if (lang === "bn") $("desk").classList.add("lang-bn");
+    if (lang === "mr") $("desk").classList.add("lang-mr");
+    translator = null;
+  }
+
+  function setOut(text) {
+    const t = (text || "").trim();
+    out.textContent = t || "Translation appears here.";
+    out.classList.toggle("empty", !t);
+  }
+
+  document.querySelectorAll(".lang").forEach((btn) => {
+    btn.onclick = () => { lang = btn.dataset.lang; paintLang(); };
   });
 
-  $("sample").onclick = () => { $("src").value = SAMPLES[lang]; };
-
-  $("file").onchange = (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    $("player").src = URL.createObjectURL(f);
+  src.addEventListener("input", () => { $("count").textContent = String(src.value.length); });
+  $("sample").onclick = () => { src.value = SAMPLES[lang]; $("count").textContent = String(src.value.length); };
+  $("clear").onclick = () => { src.value = ""; setOut(""); $("count").textContent = "0"; };
+  $("copy").onclick = async () => {
+    const t = out.classList.contains("empty") ? "" : out.textContent;
+    if (!t) return;
+    await navigator.clipboard.writeText(t);
+    $("copy").textContent = "Copied";
+    setTimeout(() => { $("copy").textContent = "Copy"; }, 1200);
   };
 
   async function loadTM() {
     if (tm.length) return tm;
     const res = await fetch("./kokborok_tm.json");
     tm = await res.json();
+    $("ready").textContent = tm.length.toLocaleString() + " Kokborok pairs";
     return tm;
   }
 
   function norm(s) {
     return (s || "").toLowerCase().replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
   }
-
-  function tokens(s) {
-    return norm(s).split(" ").filter(Boolean);
-  }
+  function tokens(s) { return norm(s).split(" ").filter(Boolean); }
 
   function tmLookup(text) {
     const n = norm(text);
     if (!n) return null;
     const exact = tm.find((p) => norm(p.k) === n);
-    if (exact) return { english: exact.e, how: "exact Kokborok memory (sdmy/kokborok)" };
+    if (exact) return { english: exact.e, how: "Kokborok lexicon · exact match" };
     const q = new Set(tokens(text));
     if (!q.size) return null;
     let best = null, bestScore = 0;
@@ -139,15 +302,14 @@
       const score = hit / Math.max(t.length, q.size);
       if (score > bestScore) { bestScore = score; best = p; }
     }
-    if (best && bestScore >= 0.45) {
-      return { english: best.e, how: `fuzzy Kokborok memory (${bestScore.toFixed(2)} overlap)` };
-    }
-    return best ? { english: best.e, how: `nearest Kokborok phrase (${bestScore.toFixed(2)}; low confidence)` } : null;
+    if (best && bestScore >= 0.45) return { english: best.e, how: `Kokborok lexicon · ${Math.round(bestScore * 100)}% overlap` };
+    return best ? { english: best.e, how: `nearest Kokborok phrase · low confidence` } : null;
   }
 
   async function getTranslator() {
     if (translator) return translator;
-    status("Loading M2M100 (Bengali / Marathi → English)…");
+    setStatus("Downloading M2M100 — first time only, then cached.");
+    engine.textContent = "Loading neural translator…";
     translator = await pipeline("translation", "Xenova/m2m100_418M");
     return translator;
   }
@@ -155,73 +317,101 @@
   async function neuralToEnglish(text) {
     const t = await getTranslator();
     const src_lang = lang === "mr" ? "mr" : "bn";
-    const out = await t(text, { src_lang, tgt_lang: "en" });
-    const row = Array.isArray(out) ? out[0] : out;
+    const result = await t(text, { src_lang, tgt_lang: "en" });
+    const row = Array.isArray(result) ? result[0] : result;
     return row.translation_text || row.text || String(row);
   }
 
-  function looksBengali(s) {
-    return /[\u0980-\u09FF]/.test(s);
-  }
+  function looksBengali(s) { return /[\u0980-\u09FF]/.test(s); }
 
   async function translateText(text) {
-    const src = (text || "").trim();
-    if (!src) return { english: "", how: "empty" };
+    const value = (text || "").trim();
+    if (!value) return { english: "", how: "Type something on the left." };
     if (lang === "trp") {
       await loadTM();
-      const hit = tmLookup(src);
+      const hit = tmLookup(value);
       if (hit && !hit.how.includes("low confidence")) return hit;
-      if (looksBengali(src)) {
-        const english = await neuralToEnglish(src);
-        return { english, how: "Bengali-script Kokborok → M2M100 bn→en (areal transfer)" };
+      if (looksBengali(value)) {
+        const english = await neuralToEnglish(value);
+        return { english, how: "Bengali-script Kokborok · M2M100 bn→en" };
       }
       if (hit) return hit;
-      return { english: "", how: "No Kokborok neural pair in-browser. Add more parallel text or train NLLB locally." };
+      return { english: "", how: "No close Kokborok pair in the lexicon. Try a shorter phrase, or Bangla script." };
     }
-    const english = await neuralToEnglish(src);
-    return { english, how: `M2M100 ${lang}→en` };
+    const english = await neuralToEnglish(value);
+    return { english, how: `M2M100 · ${lang} → en` };
   }
 
-  $("go").onclick = async () => {
-    $("go").disabled = true;
+  async function runTranslate() {
+    setBusy(true);
     try {
-      const { english, how } = await translateText($("src").value);
-      $("out").textContent = english || "—";
-      status(how, english ? "ok" : "err");
+      const { english, how } = await translateText(src.value);
+      setOut(english);
+      setStatus(how, english ? "ok" : "err");
+      engine.textContent = how;
     } catch (err) {
-      status(String(err), "err");
+      setStatus(String(err), "err");
     } finally {
-      $("go").disabled = false;
+      setBusy(false);
     }
-  };
+  }
 
-  $("asr").onclick = async () => {
+  $("go").onclick = runTranslate;
+  src.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault();
+      runTranslate();
+    }
+  });
+
+  function takeFile(f) {
+    if (!f) return;
+    $("player").src = URL.createObjectURL(f);
+    $("player").classList.add("show");
+  }
+  $("file").onchange = (e) => takeFile(e.target.files?.[0]);
+  const drop = $("drop");
+  drop.addEventListener("dragover", (e) => { e.preventDefault(); });
+  drop.addEventListener("drop", (e) => {
+    e.preventDefault();
+    takeFile(e.dataTransfer.files?.[0]);
+    $("file").files = e.dataTransfer.files;
+  });
+  drop.addEventListener("click", (e) => {
+    if (e.target.closest("#asr")) return;
+    $("file").click();
+  });
+
+  $("asr").onclick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     const f = $("file").files?.[0];
-    if (!f) { status("Choose an audio file first.", "err"); return; }
-    $("asr").disabled = true;
+    if (!f) { setStatus("Drop or choose an audio file first.", "err"); return; }
+    setBusy(true);
     try {
-      status("Loading Whisper tiny (speech → text)…");
+      setStatus("Loading Whisper tiny…");
       if (!asr) asr = await pipeline("automatic-speech-recognition", "Xenova/whisper-tiny");
       const url = URL.createObjectURL(f);
-      const langHint = lang === "bn" ? "bengali" : lang === "mr" ? "marathi" : null;
-      const asrOut = langHint
-        ? await asr(url, { language: langHint, task: "transcribe" })
-        : await asr(url);
+      const hint = lang === "bn" ? "bengali" : lang === "mr" ? "marathi" : null;
+      const asrOut = hint ? await asr(url, { language: hint, task: "transcribe" }) : await asr(url);
       URL.revokeObjectURL(url);
       const transcript = (asrOut.text || "").trim();
-      $("src").value = transcript;
-      status("Transcribed. Translating…");
+      src.value = transcript;
+      $("count").textContent = String(src.value.length);
+      setStatus("Transcribed. Translating…");
       const { english, how } = await translateText(transcript);
-      $("out").textContent = english || "—";
-      status(`ASR → ${how}`, english ? "ok" : "err");
+      setOut(english);
+      setStatus("Speech → " + how, english ? "ok" : "err");
+      engine.textContent = "Speech → " + how;
     } catch (err) {
-      status(String(err), "err");
+      setStatus(String(err), "err");
     } finally {
-      $("asr").disabled = false;
+      setBusy(false);
     }
   };
 
-  loadTM().then((rows) => status(`Kokborok memory ready (${rows.length} pairs).`)).catch(() => {});
+  loadTM().catch(() => { $("ready").textContent = "Lexicon missing"; });
+  paintLang();
 </script>
 </body>
 </html>
