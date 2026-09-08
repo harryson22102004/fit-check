@@ -1,0 +1,8 @@
+language: trp
+task: asr
+hub_dataset: sulabhkatiyar/ne-asr-dataset-trp
+pretrained: sulabhkatiyar/ne-asr-trp
+base: facebook/mms-1b-all
+augmentation: speed_only
+sample_rate: 16000
+splits: {train: 2511, validation: 274, test: 279}

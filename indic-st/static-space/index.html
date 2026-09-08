@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tripura ST Lab — Kokborok speech translation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --ink:#1c1917; --paper:#f6f0e4; --orange:#e85d04; --navy:#14213d; }
+    body { margin:0; font-family:"IBM Plex Sans",sans-serif; background:var(--paper); color:var(--ink); }
+    main { max-width: 760px; margin: 48px auto; padding: 0 20px 80px; }
+    h1,h2 { font-family: Fraunces, Georgia, serif; color: var(--navy); }
+    h1 { font-size: 42px; line-height: 1.1; }
+    .tag { color: var(--orange); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 12px; }
+    a { color: #1d4ed8; }
+    pre { background:#14213d; color:#f6f0e4; padding:16px; border-radius:12px; overflow:auto; }
+    .pipe { background:white; border:1px solid #e7dcc8; border-radius:16px; padding:18px 20px; margin: 18px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <p class="tag">vivekharry · Tripura ST Lab</p>
+  <h1>Kokborok audio → Kokborok text → English</h1>
+  <p>Low-resource speech translation lab. Start with Kokborok (tonal, Bodo–Garo), then Bengali and Marathi on BhasaAnuvaad.</p>
+  <div class="pipe">
+    <strong>Cascade</strong><br />
+    16 kHz WAV → NE-ASR / Whisper fine-tune → NLLB / local MT → English
+  </div>
+  <p>Full training code, dataset registry, and model card:</p>
+  <p><a href="https://huggingface.co/vivekharry/tripura-st-lab">huggingface.co/vivekharry/tripura-st-lab</a></p>
+  <h2>Train</h2>
+  <pre>pip install datasets transformers accelerate librosa
+python -m indic_st.train_asr --dataset kokborok_asr --init-from openai/whisper-small
+python -m indic_st.train_mt  --dataset kokborok_mt</pre>
+  <p>Nearest language: Bodo. Do not pitch-shift Kokborok (tonal). Speed 0.9 / 1.0 / 1.1 only.</p>
+</main>
+</body>
+</html>
