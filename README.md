@@ -10,7 +10,7 @@ Built from the project blueprint for Vivek Das (B.Tech CSE, KIIT University).
 - **Enrollment** — webcam captures 5–10 stills at different angles, stores 128-d face embeddings plus reference photos
 - **Kiosk** — samples the camera every ~2 seconds, matches every face in the frame, optional blink/motion liveness
 - **Logging** — SQLite `UNIQUE(student_id, date)` so a student who walks past five times still has one row
-- **Present / Late** — inside the attendance window → Present; after it → Late, still with the true `time_in`
+- **Present / Late** — on or before the given class time (or the later “Late after” grace) → Present; after that the biometric marks **Late**, still with the true `time_in`
 - **Close day** — writes `Absent` for everyone with no row that date
 - **Teacher report** — daily roll, week/month %, class filter, CSV and PDF export
 
@@ -41,7 +41,7 @@ pytest -q
 
 ## Settings
 
-Default window is 08:00–08:30 (`Asia/Kolkata`). After 08:30 a first detection is still stored, as **Late**. Tune this under **Window & settings**. Cosine match threshold starts at `0.58`.
+Default class time is 08:00 with a Late-after grace of 08:30 (`Asia/Kolkata`). A first detection after that cutoff is still stored, as **Late**. If you only change class start and leave a leftover earlier Late-after time, class start wins. Tune this under **Window & settings**. Cosine match threshold starts at `0.58`.
 
 Data lives in `data/attendance.db` and `data/photos/`. No cloud account is required.
 

@@ -5,7 +5,7 @@
     <div>
       <p class="eyebrow">Attendance window</p>
       <h1>When Present becomes Late</h1>
-      <p class="lede">Detection inside the window is Present. After the cutoff it is still logged, with the real camera time, as Late. Closing the day writes Absent for anyone with no row.</p>
+      <p class="lede">The given class time is the last on-time punch. A biometric match after that time is still stored, with the real camera time, as Late. Closing the day writes Absent for anyone with no row.</p>
     </div>
   </header>
   <form class="panel stack settings-form" method="post" action="/settings">
@@ -16,7 +16,7 @@
       <label>Class start
         <input type="time" name="class_start" value="{{ settings.class_start }}" />
       </label>
-      <label>Late after
+      <label>Late after (last on-time punch; ignored if earlier than class start)
         <input type="time" name="late_after" value="{{ settings.late_after }}" />
       </label>
     </div>

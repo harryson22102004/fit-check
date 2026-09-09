@@ -5,10 +5,10 @@
     <div>
       <p class="eyebrow">Recognition loop</p>
       <h1>Classroom door camera</h1>
-      <p class="lede">Frames are sampled every few seconds. Every face in the frame is matched. The first good match of the day writes Present or Late with the real timestamp; repeats are ignored.</p>
+      <p class="lede">Frames are sampled every few seconds. Every face in the frame is matched. The first good match of the day is on time until the given class time; after that the biometric marks Late. Repeats the same day are ignored.</p>
     </div>
     <div class="kiosk-meta">
-      <div>Window {{ settings.class_start }}–{{ settings.late_after }} · late after that</div>
+      <div>On time until {{ late_cutoff }} · after that the biometric marks Late</div>
       <div>Match ≥ {{ settings.match_threshold }} cosine</div>
     </div>
   </header>

@@ -15,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 
-from app.attendance import daily_report, mark_absents_for_date, range_report, record_attendance
+from app.attendance import daily_report, late_cutoff, mark_absents_for_date, parse_hhmm, range_report, record_attendance
 from app.config import (
     EUCLIDEAN_THRESHOLD,
     MATCH_THRESHOLD,
@@ -82,6 +82,7 @@ def render(request: Request, name: str, **ctx: Any) -> HTMLResponse:
         "clock": now().strftime("%d %b %Y · %H:%M"),
         "enrolled_count": enrolled,
         "present_today": present_today,
+        "late_cutoff": late_cutoff(now(), settings).strftime("%H:%M"),
         **ctx,
     }
     return templates.TemplateResponse(request, name, payload)
@@ -232,6 +233,11 @@ def save_settings(
 ):
     with get_db() as conn:
         set_setting(conn, "class_start", class_start)
+        try:
+            if parse_hhmm(late_after) < parse_hhmm(class_start):
+                late_after = class_start
+        except ValueError:
+            late_after = class_start
         set_setting(conn, "late_after", late_after)
         set_setting(conn, "close_after", close_after)
         set_setting(conn, "institution", institution.strip() or "KIIT University")

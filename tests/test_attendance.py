@@ -57,10 +57,37 @@ def test_late_status():
     from zoneinfo import ZoneInfo
 
     tz = ZoneInfo("Asia/Kolkata")
-    settings = {"late_after": "08:30"}
+    settings = {"class_start": "08:00", "late_after": "08:30"}
     early = datetime(2026, 9, 6, 8, 12, tzinfo=tz)
-    late = datetime(2026, 9, 6, 9, 5, tzinfo=tz)
+    on_cutoff = datetime(2026, 9, 6, 8, 30, tzinfo=tz)
+    late = datetime(2026, 9, 6, 8, 30, 1, tzinfo=tz)
     assert status_for_time(early, settings) == "Present"
+    assert status_for_time(on_cutoff, settings) == "Present"
+    assert status_for_time(late, settings) == "Late"
+
+
+def test_late_uses_class_start_when_late_after_is_earlier():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    tz = ZoneInfo("Asia/Kolkata")
+    # Default 08:30 leftover while class was set to 10:00 must not mark 09:45 as Late.
+    settings = {"class_start": "10:00", "late_after": "08:30"}
+    before_class = datetime(2026, 9, 6, 9, 45, tzinfo=tz)
+    just_after = datetime(2026, 9, 6, 10, 0, 1, tzinfo=tz)
+    assert status_for_time(before_class, settings) == "Present"
+    assert status_for_time(just_after, settings) == "Late"
+
+
+def test_late_after_class_start_with_no_grace():
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+
+    tz = ZoneInfo("Asia/Kolkata")
+    settings = {"class_start": "09:00", "late_after": "09:00"}
+    on_time = datetime(2026, 9, 6, 9, 0, tzinfo=tz)
+    late = datetime(2026, 9, 6, 9, 1, tzinfo=tz)
+    assert status_for_time(on_time, settings) == "Present"
     assert status_for_time(late, settings) == "Late"
 
 

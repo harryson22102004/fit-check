@@ -7,15 +7,31 @@ from app.db import TZ, now, today_str
 
 
 def parse_hhmm(value: str) -> tuple[int, int]:
-    hour, minute = value.split(":")
-    return int(hour), int(minute)
+    parts = (value or "").strip().split(":")
+    hour = int(parts[0])
+    minute = int(parts[1]) if len(parts) > 1 else 0
+    if hour < 0 or hour > 23 or minute < 0 or minute > 59:
+        raise ValueError(f"invalid time {value!r}")
+    return hour, minute
+
+
+def _time_on_day(local: datetime, hhmm: str) -> datetime:
+    hour, minute = parse_hhmm(hhmm)
+    return local.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+
+def late_cutoff(detected: datetime, settings: dict[str, str]) -> datetime:
+    """Last on-time instant: class start, or Late after if that is later the same day."""
+    local = detected.astimezone(TZ) if detected.tzinfo else detected.replace(tzinfo=TZ)
+    start = _time_on_day(local, settings.get("class_start") or "08:00")
+    grace = _time_on_day(local, settings.get("late_after") or settings.get("class_start") or "08:30")
+    return max(start, grace)
 
 
 def status_for_time(detected: datetime, settings: dict[str, str]) -> str:
-    """Present inside the attendance window; Late after it. Always keep real time_in."""
-    late_h, late_m = parse_hhmm(settings.get("late_after", "08:30"))
-    late_at = detected.replace(hour=late_h, minute=late_m, second=0, microsecond=0)
-    if detected <= late_at:
+    """On or before the given class/late time → Present. After it → Late. Keep real time_in."""
+    local = detected.astimezone(TZ) if detected.tzinfo else detected.replace(tzinfo=TZ)
+    if local <= late_cutoff(local, settings):
         return "Present"
     return "Late"
 
